@@ -1,8 +1,11 @@
+#include <ESP8266WiFi.h>
+#include <ESP8266WebServer.h>
+
 char ssid[] = "NOS_Internet_F97C";
 char pass[] = "99531543";
 
 int wifi_led = D2;
-int trigger = D1;
+int relay = D1;
 String header;
 
 WiFiServer server(80);
@@ -15,23 +18,25 @@ const long timeoutTime = 10000;
 
 void turnSw(WiFiClient cl)
 {
-  if (digitalRead(trigger) != 1)
+  if (digitalRead(relay) != 1)
   {
-    digitalWrite(trigger, HIGH);
-    cl.println("<p style=\"color: green\">Desligado</p>");
+    digitalWrite(wifi_led, LOW);
+    digitalWrite(relay, HIGH);
+    cl.println("<p style=\"color: red\">Desligado</p>");
   }
   else
   {
-    digitalWrite(trigger, LOW);
-    cl.println("<p style=\"color: red\">Ligado</p>");
+    digitalWrite(wifi_led, HIGH);
+    digitalWrite(relay, LOW);
+    cl.println("<p style=\"color: green\">Ligado</p>");
   }
 }
 
 void setup()
 {
-  Serial.begin(115200);
+  Serial.begin(9600);
   pinMode(wifi_led, OUTPUT);
-  pinMode(trigger, OUTPUT);
+  pinMode(relay, OUTPUT);
 
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED)
@@ -41,7 +46,7 @@ void setup()
   }
   Serial.println("");
   digitalWrite(wifi_led, HIGH);
-  digitalWrite(trigger, LOW);
+  digitalWrite(relay, LOW);
   Serial.println(WiFi.localIP());
   server.begin();
 }
@@ -92,7 +97,7 @@ void loop()
               client.println("request.send(null); }");
               client.println("</script></head><body>");
               client.println("<h1 style=\" text - align: center; font - family: verdana; color: rgb(82, 82, 82) \">Controlo Painel Solar</h1>");
-              if (digitalRead(trigger) != 1)
+              if (digitalRead(relay) != 1)
               {
                 client.println("<h2 id=\"state\" style=\"text-align: center; font-family: verdana;\"><p style=\"color: red\">Ligado</p></h2>");
               }
