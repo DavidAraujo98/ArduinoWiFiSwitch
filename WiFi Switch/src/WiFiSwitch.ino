@@ -38,6 +38,7 @@ void setup()
   pinMode(wifi_led, OUTPUT);
   pinMode(relay, OUTPUT);
 
+  WiFi.mode(WIFI_STA);
   WiFi.begin(ssid, pass);
   while (WiFi.status() != WL_CONNECTED)
   {
@@ -45,6 +46,7 @@ void setup()
     delay(1000);
   }
   Serial.println("");
+  Serial.println(WiFi.channel());
   digitalWrite(wifi_led, HIGH);
   digitalWrite(relay, LOW);
   Serial.println(WiFi.localIP());
